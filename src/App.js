@@ -2,6 +2,7 @@ import "./App.css";
 import { useRef, useState } from "react";
 import DiaryEditor from "./DiaryEditor";
 import DiaryList from "./DiaryList";
+import Lifecycle from "./Lifecycle";
 
 // const dummyList = [
 //   {
@@ -48,10 +49,22 @@ function App() {
     setData([newItem, ...data]);
   };
 
+  const onRemove = (targetId) => {
+    const newDiaryList = data.filter((data) => data.id !== targetId);
+    setData(newDiaryList);
+  }
+
+  const onEdit = (targetId, newContent) => {
+    setData(
+        data.map((it)=> it.id === targetId ? {...it, content: newContent} : it )
+    )
+  }
+
   return (
     <div className="App">
+      <Lifecycle />
       <DiaryEditor onCreate={onCreate} />
-      <DiaryList diaryList={data} />
+      <DiaryList onRemove={onRemove} diaryList={data} onEdit={onEdit} />
     </div>
   );
 }
