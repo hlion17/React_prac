@@ -1,9 +1,12 @@
 import DiaryItem from "./DiaryItem";
-import React from 'react';
+import React, {useContext} from 'react';
+import {DiaryStateContext} from "./App";
 
-const DiaryList = ({onRemove, diaryList, onEdit}) => {
+const DiaryList = () => {
+
+    const diaryList = useContext(DiaryStateContext);
     const renderDiaryItems = (diaryList) => diaryList.map((item) => (
-        <DiaryItem key={item.id} {...item} handleContentRemoval={onRemove} handleContentEdit={onEdit}/>
+        <DiaryItem key={item.id} {...item} />
     ));
 
     return (

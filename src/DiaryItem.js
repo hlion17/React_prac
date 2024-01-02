@@ -1,12 +1,20 @@
-import React, {useRef, useState} from "react";
+import React, {useContext, useRef, useState} from "react";
+import {DiaryDispatchContext} from "./App";
 
-const DiaryItem = ({id, author, content, emotion, created_date, handleContentRemoval, handleContentEdit}) => {
+const DiaryItem = ({id, author, content, emotion, created_date}) => {
+    const {handleContentRemoval, handleContentEdit} = useContext(DiaryDispatchContext);
+
     const [isEditMode, setEditMode] = useState(false);
     const userTextInput = useRef();
     const [userContent, setUserContent] = useState(content);
 
     const toggleEditMode = () => {
         setEditMode(!isEditMode);
+    }
+
+    const toggleEditModeWithReset = () => {
+        setEditMode(!isEditMode);
+        setUserContent(content);
     }
 
     const handleRemoval = () => {
@@ -49,7 +57,7 @@ const DiaryItem = ({id, author, content, emotion, created_date, handleContentRem
             </div>
             {isEditMode ? (
                 <>
-                    <button onClick={toggleEditMode}>Cancel Edit</button>
+                    <button onClick={toggleEditModeWithReset}>Cancel Edit</button>
                     <button onClick={handleEdit}>Confirm Edit</button>
                 </>
             ) : (

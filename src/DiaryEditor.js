@@ -1,9 +1,13 @@
-import React, {useState, useRef} from "react";
+import React, {useState, useRef, useContext} from "react";
+import {DiaryDispatchContext} from "./App";
 
 // initial state for the diary
 const INITIAL_DIARY_STATE = {author: "", content: "", emotion: 1};
 
-const DiaryEditor = ({onCreate}) => {
+const DiaryEditor = () => {
+
+    const {handleContentCreate} = useContext(DiaryDispatchContext);
+
     const [diary, setDiary] = useState(INITIAL_DIARY_STATE);
 
     const authorInput = useRef();
@@ -24,7 +28,7 @@ const DiaryEditor = ({onCreate}) => {
 
     const handleSave = (e) => {
         if (!validateInput()) return;
-        onCreate(diary);
+        handleContentCreate(diary);
         resetStylesAndDiaryState();
     };
 
