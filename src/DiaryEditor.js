@@ -1,76 +1,57 @@
 import React, {useState, useRef} from "react";
 
+// initial state for the diary
+const INITIAL_DIARY_STATE = {author: "", content: "", emotion: 1};
+
 const DiaryEditor = ({onCreate}) => {
+    const [diary, setDiary] = useState(INITIAL_DIARY_STATE);
 
-    /**
-     * React States
-     */
-    const [diary, setDiary] = useState({
-        author: "",
-        content: "",
-        emotion: 1,
-    });
-
-    /**
-     * React DOM Refs
-     */
     const authorInput = useRef();
     const contentInput = useRef();
 
-    /**
-     * Handler Object
-     * - StateHandler: 관련 상태(State)를 업데이트 하거나 저장
-     * - StyleHandler: 관련 DOM Style 변경
-     */
-    const StateHandler = {
-        setValue: (e) => {
-            setDiary({
-                ...diary,
-                [e.target.name]: e.target.value,
-            });
-        },
-        save: (e) => {
-            if (!validateInput()) return;
-            onCreate(diary.author, diary.content, diary.emotion);
-            alert("저장성공");
-            setDiary({author: "", content: "", emotion: 1});
-        },
+    const setDiaryValue = (e) => {
+        setDiary({
+            ...diary,
+            [e.target.name]: e.target.value,
+        });
     };
 
-    const StyleHandler = {
-        warnStyle: (e) => {
-            e.current.focus();
-            e.current.classList.add("warn");
-        },
-        resetStyle: (e) => {
-            e.current.classList.remove("warn");
-        },
-        resetStyleAll: (elements) => {
-            for (const element of elements) {
-                element.current.classList.remove("warn");
-            }
-        },
+    const resetStylesAndDiaryState = () => {
+        alert("저장성공");
+        resetStyles([authorInput, contentInput]);
+        setDiary(INITIAL_DIARY_STATE);
     };
 
-    /**
-     * Functions
-     */
+    const handleSave = (e) => {
+        if (!validateInput()) return;
+        onCreate(diary);
+        resetStylesAndDiaryState();
+    };
+
+    const resetStyles = (elements) => {
+        for (const element of elements) {
+            element.current.classList.remove("warn");
+        }
+    };
+
     const validateInput = () => {
-        StyleHandler.resetStyleAll([authorInput, contentInput]);
-
+        resetStyles([authorInput, contentInput]);
         if (diary.author.length < 1) {
             alert("작성자는 최소 1글자 이상 입력해주세요");
-            StyleHandler.warnStyle(authorInput);
+            warnStyle(authorInput);
             return false;
         }
         if (diary.content.length < 5) {
             alert("일기 본문은 최소 5글자 이상 입력해주세요");
-            StyleHandler.warnStyle(contentInput);
+            warnStyle(contentInput);
             return false;
         }
-
-        StyleHandler.resetStyleAll([authorInput, contentInput]);
         return true;
+    };
+
+    const warnStyle = (e) => {
+        e.current.focus();
+        e.current.classList.add("warn");
     };
 
     return (
@@ -81,7 +62,7 @@ const DiaryEditor = ({onCreate}) => {
                     name="author"
                     ref={authorInput}
                     value={diary.author}
-                    onChange={StateHandler.setValue}
+                    onChange={setDiaryValue}
                 />
             </div>
             <div>
@@ -89,14 +70,14 @@ const DiaryEditor = ({onCreate}) => {
             name="content"
             ref={contentInput}
             value={diary.content}
-            onChange={StateHandler.setValue}
+            onChange={setDiaryValue}
         ></textarea>
             </div>
             <div>
                 <select
                     name="emotion"
                     value={diary.emotion}
-                    onChange={StateHandler.setValue}
+                    onChange={setDiaryValue}
                 >
                     <option value={1}>1</option>
                     <option value={2}>2</option>
@@ -104,7 +85,7 @@ const DiaryEditor = ({onCreate}) => {
                 </select>
             </div>
             <div>
-                <button onClick={StateHandler.save}>일기저장하기</button>
+                <button onClick={handleSave}>일기저장하기</button>
             </div>
         </div>
     );

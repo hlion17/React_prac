@@ -3,48 +3,48 @@ import {useCallback, useEffect, useMemo, useReducer, useRef} from "react";
 import DiaryEditor from "./DiaryEditor";
 import DiaryList from "./DiaryList";
 
+const Actions = {
+    INIT: 'INIT',
+    CREATE: 'CREATE',
+    REMOVE: 'REMOVE',
+    EDIT: 'EDIT',
+};
+
 const reducer = (state, action) => {
     switch (action.type) {
-        case 'INIT': {
+        case Actions.INIT:
             return action.data;
-        }
-        case 'CREATE': {
-            const create_date = new Date().getTime();
-            const newItem = {
-                ...action.data,
-                create_date,
-            }
-            return [newItem, ...state];
-        }
-        case 'REMOVE': {
-            return state.filter(it => it.id !== action.targetId);
-        }
-        case 'EDIT': {
-            return state.map(it => it.id === action.targetId ? {...it, content: action.newContent} : it);
-        }
+        case Actions.CREATE:
+            return [
+                {create_date: Date.now(), ...action.data},
+                ...state
+            ];
+        case Actions.REMOVE:
+            return state.filter(it => it.id !== action.id);
+        case Actions.EDIT:
+            return state.map(it => (it.id === action.id ? {...it, content: action.content} : it));
+
         default:
             return state;
     }
 }
 
+const createDiaryEntry = (dataId, it) => ({
+    author: it.email,
+    content: it.body,
+    emotion: Math.floor(Math.random() * 3) + 1,
+    created_date: Date.now(),
+    id: dataId.current++,
+});
+
 function App() {
-    // const [data, setData] = useState([]);
     const [data, dispatch] = useReducer(reducer, []);
     const dataId = useRef(0);
 
     const getData = async () => {
         const res = await fetch('https://jsonplaceholder.typicode.com/comments').then((res) => res.json());
-        const initData = res.slice(0, 20).map((it) => {
-            return {
-                author: it.email,
-                content: it.body,
-                emotion: Math.floor(Math.random() * 3) + 1,
-                created_date: new Date().getTime(),
-                id: dataId.current++,
-            }
-        });
-
-        dispatch({type: 'INIT', data: initData});
+        const initData = res.slice(0, 20).map(it => createDiaryEntry(dataId, it));
+        dispatch({type: Actions.INIT, data: initData});
     }
 
     useEffect(() => {
@@ -52,27 +52,26 @@ function App() {
     }, []);
 
     const onCreate = useCallback((author, content, emotion) => {
-        dispatch({type: 'CREATE',data: {author, content, emotion, id: dataId.current}});
+        dispatch({type: Actions.CREATE, data: {author, content, emotion, id: dataId.current}});
         dataId.current += 1;
     }, []);
 
-    const onRemove = useCallback((targetId) => {
-        dispatch({type: 'REMOVE', targetId});
+    const onRemove = useCallback((id) => {
+        dispatch({type: Actions.REMOVE, id});
     }, []);
 
-    const onEdit = useCallback((targetId, newContent) => {
-        dispatch({type: 'EDIT', targetId, newContent});
-        // setData(data => data.map(it => it.id === targetId ? {...it, content: newContent} : it))
+    const onEdit = useCallback((id, content) => {
+        dispatch({type: Actions.EDIT, id, content});
     }, []);
 
-    const getDiaryAnalysis = useMemo(() => {
+    const {goodCount, badCount, goodRatio} = useMemo(() => {
         const goodCount = data.filter((it) => it.emotion > 1).length;
-        const badCount = data.length - goodCount;
-        const goodRatio = (goodCount / data.length) * 100;
-        return {goodCount, badCount, goodRatio};
+        return {
+            goodCount,
+            badCount: data.length - goodCount,
+            goodRatio: goodCount / data.length * 100
+        };
     }, [data.length]);
-
-    const {goodCount, badCount, goodRatio} = getDiaryAnalysis;
 
     return (<div className="App">
         <DiaryEditor onCreate={onCreate}/>
