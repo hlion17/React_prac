@@ -38,9 +38,10 @@ const DiaryItem = ({id, author, content, emotion, created_date, onRemove, onEdit
                 <span className='date'>{new Date(created_date).toLocaleDateString()}</span>
                 <p className='content'>
                     {isEdit ? (
-                        <>
-                            <textarea ref={localValueInput} value={localContent} onChange={(e) => setLocalContent(e.target.value)}/>
-                        </>
+                            <>
+                                <textarea ref={localValueInput} value={localContent}
+                                          onChange={(e) => setLocalContent(e.target.value)}/>
+                            </>
                         )
                         : (
                             <>{content}</>
