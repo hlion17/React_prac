@@ -27,23 +27,22 @@ function App() {
         getData();
     }, []);
 
-    const onCreate = (author, content, emotion) => {
+    const onCreate = useCallback((author, content, emotion) => {
         const created_date = new Date().getTime();
         const newItem = {
             author, content, emotion, created_date, id: dataId.current,
         };
         dataId.current += 1;
         setData((data) => [newItem, ...data]);
-    }
-
-    const onRemove = useCallback((targetId) => {
-        const newDiaryList = data.filter((data) => data.id !== targetId);
-        setData(newDiaryList);
     }, []);
 
-    const onEdit = (targetId, newContent) => {
-        setData(data.map((it) => it.id === targetId ? {...it, content: newContent} : it))
-    }
+    const onRemove = useCallback((targetId) => {
+        setData(data => data.filter(it => it.id !== targetId));
+    }, []);
+
+    const onEdit = useCallback((targetId, newContent) => {
+        setData(data => data.map(it => it.id === targetId ? {...it, content: newContent} : it))
+    }, []);
 
     const getDiaryAnalysis = useMemo(() => {
         const goodCount = data.filter((it) => it.emotion > 1).length;

@@ -1,9 +1,6 @@
-import React, {useState, useRef, useEffect} from "react";
+import React, {useState, useRef} from "react";
 
 const DiaryEditor = ({onCreate}) => {
-    useEffect(() => {
-        console.log('Diary Editor is rendered');
-    }, []);
 
     /**
      * React States
