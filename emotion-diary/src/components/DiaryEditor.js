@@ -2,7 +2,7 @@ import MyHeader from "./MyHeader";
 import MyButton from "./MyButton";
 
 import {useNavigate} from "react-router-dom";
-import {useContext, useEffect, useRef, useState} from "react";
+import {useCallback, useContext, useEffect, useRef, useState} from "react";
 import EmotionItem from "./EmotionItem";
 import {DiaryDispatchContext} from "../App";
 
@@ -11,27 +11,24 @@ import {emotionList} from "../util/Emotion";
 
 const DiaryEditor = ({isEdit, originData}) => {
 
-    const navigate = useNavigate();
-    const {onCreate, onEdit, onRemove} = useContext(DiaryDispatchContext);
-
-    const contentRef = useRef();
-
-    const [date, setDate] = useState(getStringDate(new Date()));
-    const [emotion, setEmotion] = useState(3);
-    const [content, setContent] = useState("");
-
     useEffect(() => {
         if (isEdit) {
-            // setDate(getStringDate(new Date(parseInt(originData.date))));
             setDate(getStringDate(new Date(originData.date)));
             setEmotion(originData.emotion);
             setContent(originData.content);
         }
     }, [isEdit, originData]);
 
-    const handleClickEmote = (emotion) => {
+    const navigate = useNavigate();
+    const {onCreate, onEdit, onRemove} = useContext(DiaryDispatchContext);
+    const contentRef = useRef();
+    const [date, setDate] = useState(getStringDate(new Date()));
+    const [emotion, setEmotion] = useState(3);
+    const [content, setContent] = useState("");
+
+    const handleClickEmote = useCallback((emotion) => {
         setEmotion(emotion);
-    }
+    }, []);
 
     const handleSubmit = () => {
         if (content.length < 1) {
