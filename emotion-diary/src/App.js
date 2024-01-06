@@ -18,7 +18,7 @@ const reducer = (state, action) => {
             newState = state.filter(it => it.id !== action.targetId);
             break;
         case "EDIT":
-            newState = state.map(it => it.id === action.data.targetId ? {...action.data} : it);
+            newState = state.map(it => it.id === action.data.id ? {...action.data} : it);
             break;
         default:
             return state;
@@ -70,7 +70,7 @@ function App() {
         dispatch({
             type: "EDIT",
             data: {
-                targetId: targetId,
+                id: targetId,
                 date: new Date(date).getTime(),
                 content: content,
                 emotion: emotion,
