@@ -6,6 +6,11 @@ import {DiaryStateContext} from "../App";
 
 const Home = () => {
 
+    const diaryList = useContext(DiaryStateContext);
+    const [data, setData] = useState([]);
+    const [curDate, setCurDate] = useState(new Date());
+    const headText = `${curDate.getFullYear()}년 ${curDate.getMonth() + 1}월`;
+
     useEffect(() => {
         if (diaryList.length <= 0) return;
         const firstDay = new Date(curDate.getFullYear(), curDate.getMonth(), 1).getTime();
@@ -20,11 +25,6 @@ const Home = () => {
 
         setData(diaryList.filter(it => firstDay <= it.date && it.date <= lastDay));
     }, [diaryList, curDate]);
-
-    const diaryList = useContext(DiaryStateContext);
-    const [data, setData] = useState([]);
-    const [curDate, setCurDate] = useState(new Date());
-    const headText = `${curDate.getFullYear()}년 ${curDate.getMonth() + 1}월`;
 
     const increaseMonth = () => {
         setCurDate(new Date(curDate.getFullYear(), curDate.getMonth() + 1, curDate.getDate()));
