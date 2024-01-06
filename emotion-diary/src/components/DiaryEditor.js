@@ -12,7 +12,7 @@ import {emotionList} from "../util/Emotion";
 const DiaryEditor = ({isEdit, originData}) => {
 
     const navigate = useNavigate();
-    const {onCreate, onEdit} = useContext(DiaryDispatchContext);
+    const {onCreate, onEdit, onRemove} = useContext(DiaryDispatchContext);
 
     const contentRef = useRef();
 
@@ -50,11 +50,19 @@ const DiaryEditor = ({isEdit, originData}) => {
         navigate("/", {replace: true});
     }
 
+    const handleRemove = () => {
+        if (window.confirm("정말삭제하시겠습니까?")) {
+            onRemove(originData.id);
+            navigate("/", {replace: true});
+        }
+    }
+
     return (
         <div className={"DiaryEditor"}>
             <MyHeader
                 headText={isEdit ? "일기 수정하기" : "새 일기쓰기"}
                 leftChild={<MyButton text={"뒤로가기"} onClick={() => navigate(-1)}/>}
+                rightChild={<MyButton text={"삭제하기"} onClick={handleRemove} type={"negative"} />}
             />
             <div>
                 <section>

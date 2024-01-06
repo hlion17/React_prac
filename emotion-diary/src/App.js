@@ -4,7 +4,7 @@ import Home from "./pages/Home";
 import Edit from "./pages/Edit";
 import New from "./pages/New";
 import Diary from "./pages/Diary";
-import React, {useReducer, useRef} from "react";
+import React, {useEffect, useReducer, useRef} from "react";
 
 const reducer = (state, action) => {
     let newState = [];
@@ -23,52 +23,28 @@ const reducer = (state, action) => {
         default:
             return state;
     }
+
+    localStorage.setItem("diary", JSON.stringify(newState));
     return newState;
 };
-
-const dummyData = [
-    {
-        id: 1,
-        emotion: 1,
-        content: "대통령은 국회에 출석하여 발언하거나 서한으로 의견을 표시할 수 있다.",
-        date: 1704369223678,
-    },
-    {
-        id: 2,
-        emotion: 2,
-        content: "환경권의 내용과 행사에 관하여는 법률로 정한다. 정당의 설립은 자유이며, 복수정당제는 보장된다.",
-        date: 1704369223679,
-    },
-    {
-        id: 3,
-        emotion: 3,
-        content: "일반사면을 명하려면 국회의 동의를 얻어야 한다. 위원은 탄핵 또는 금고 이상의 형의 선고에 의하지 아니하고는 파면되지 아니한다.",
-        date: 1704369223680,
-    },
-    {
-        id: 4,
-        emotion: 4,
-        content: "감사원은 원장을 포함한 5인 이상 11인 이하의 감사위원으로 구성한다.",
-        date: 1704369223681,
-    },
-    {
-        id: 5,
-        emotion: 5,
-        content: "법률이 헌법에 위반되는 여부가 재판의 전제가 된 경우에는 법원은 헌법재판소에 제청하여 그 심판에 의하여 재판한다.",
-        date: 1704369223682,
-    },
-]
 
 export const DiaryStateContext = React.createContext();
 export const DiaryDispatchContext = React.createContext();
 
 function App() {
 
-    const [data, dispatch] = useReducer(reducer, dummyData);
+    useEffect(() => {
+        const localData = localStorage.getItem("diary");
+        if (localData) {
+            const diaryList = JSON.parse(localStorage.getItem("diary")).sort((a, b) => parseInt(b.id) - parseInt(a.id));
+            dataId.current = parseInt(diaryList[0].id) + 1;
 
-    const dataId = useRef(6);
+            dispatch({type: "INIT", data: diaryList});
+        }
+    }, []);
 
-
+    const [data, dispatch] = useReducer(reducer, []);
+    const dataId = useRef(0);
 
     // CREATE
     const onCreate = (date, content, emotion) => {
